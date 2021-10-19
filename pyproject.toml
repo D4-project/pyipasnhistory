@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "pyipasnhistory"
+version = "2.0"
+description = "Python client for IP ASN History"
+authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
+license = "AGPL"
+
+[tool.poetry.scripts]
+ipasnhistory = "pyipasnhistory:main"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+requests = "^2.26.0"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.910"
+types-requests = "^2.25.11"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

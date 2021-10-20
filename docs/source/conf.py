@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Py IP ASN HIstory'
+project = 'PyIPASNHistory'
 copyright = '2021, D4 team'
 author = 'D4 team'
 

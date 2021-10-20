@@ -5,16 +5,41 @@ description = "Python client for IP ASN History"
 authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
 license = "AGPL"
 
+repository = "https://github.com/lookyloo/PyLookyloo"
+documentation = "https://pylookyloo.readthedocs.io/en/latest/"
+
+readme = "README.md"
+
+classifiers = [
+    'License :: OSI Approved :: BSD License',
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Console',
+    'Operating System :: POSIX :: Linux',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: Telecommunications Industry',
+    'Intended Audience :: Information Technology',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.8',
+    'Topic :: Security',
+    'Topic :: Internet',
+]
+
+include = ['README.md']
+
 [tool.poetry.scripts]
 ipasnhistory = "pyipasnhistory:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.26.0"
+Sphinx = { version = "^4.2.0", optional = true }
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.910"
 types-requests = "^2.25.11"
+
+[tool.poetry.extras]
+docs = ["Sphinx"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

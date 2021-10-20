@@ -1,4 +1,4 @@
-[![Documentation Status](https://readthedocs.org/projects/pyipasnhistory/badge/?version=latest)](https://pyipsanhistory.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/pyipasnhistory/badge/?version=latest)](https://pyipasnhistory.readthedocs.io/en/latest/)
 
 # PyIPASNHistory
 

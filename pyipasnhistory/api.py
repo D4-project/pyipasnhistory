@@ -29,6 +29,7 @@ class IPASNHistory():
         return r.json()
 
     def mass_cache(self, list_to_cache: list):
+        '''Cache a list of IP queries. The next call on the same IPs will be very quick.'''
         to_query = []
         for entry in list_to_cache:
             if 'precision_delta' in entry:
@@ -39,6 +40,7 @@ class IPASNHistory():
         return r.json()
 
     def mass_query(self, list_to_query: list):
+        '''Query a list of IPs.'''
         to_query = []
         for entry in list_to_query:
             if 'precision_delta' in entry:
@@ -49,6 +51,7 @@ class IPASNHistory():
 
     def asn_meta(self, asn: int=None, source: str='caida', address_family: str='v4',
                  date: str=None, first: str=None, last: str=None, precision_delta: dict={}):
+        '''Get all the prefixes annonced by an AS'''
         to_query: Dict[str, Any] = {'source': source, 'address_family': address_family}
         if asn:
             to_query['asn'] = asn
@@ -87,6 +90,7 @@ class IPASNHistory():
               date: str=None, first: str=None, last: str=None, precision_delta: dict={},
               aggregate: bool=False):
         '''Launch a query.
+
         :param ip: IP to lookup
         :param source: Source to query (currently, only caida is supported)
         :param address_family: v4 or v6. If None: use ipaddress to figure it out.

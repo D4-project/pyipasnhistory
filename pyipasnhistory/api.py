@@ -5,15 +5,17 @@ import json
 import requests
 
 from typing import Dict, Any
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import ipaddress
 
 
 class IPASNHistory():
 
-    def __init__(self, root_url: str='https://bgpranking-ng.circl.lu/ipasn_history/'):
+    def __init__(self, root_url: str='https://ipasnhistory.circl.lu/'):
         self.root_url = root_url
+        if not urlparse(self.root_url).scheme:
+            self.root_url = 'http://' + self.root_url
         if not self.root_url.endswith('/'):
             self.root_url += '/'
         self.session = requests.session()

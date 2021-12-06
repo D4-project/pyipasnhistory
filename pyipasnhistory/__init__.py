@@ -30,6 +30,10 @@ def main():
         ipasn = IPASNHistory(args.url)
     else:
         ipasn = IPASNHistory()
+
+    if not ipasn.is_up:
+        print(f'Unable to connect to the server {ipasn.root_url}.')
+
     if args.meta:
         response = ipasn.meta()
         print(json.dumps(response))

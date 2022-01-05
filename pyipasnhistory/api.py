@@ -4,7 +4,7 @@
 import json
 import requests
 
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from urllib.parse import urljoin, urlparse
 
 import ipaddress
@@ -51,10 +51,13 @@ class IPASNHistory():
         r = self.session.post(urljoin(self.root_url, 'mass_query'), data=json.dumps(to_query))
         return r.json()
 
-    def asn_meta(self, asn: int=None, source: str='caida', address_family: str='v4',
-                 date: str=None, first: str=None, last: str=None, precision_delta: dict={}):
+    def asn_meta(self, asn: Optional[int]=None, source: Optional[str]=None, address_family: str='v4',
+                 date: Optional[str]=None, first: Optional[str]=None, last: Optional[str]=None,
+                 precision_delta: Optional[Dict]=None):
         '''Get all the prefixes annonced by an AS'''
-        to_query: Dict[str, Any] = {'source': source, 'address_family': address_family}
+        to_query: Dict[str, Any] = {'address_family': address_family}
+        if source:
+            to_query['source'] = source
         if asn:
             to_query['asn'] = asn
         if date:
@@ -88,13 +91,13 @@ class IPASNHistory():
         to_return.append(current)
         return to_return
 
-    def query(self, ip: str, source: str='caida', address_family: str=None,
-              date: str=None, first: str=None, last: str=None, precision_delta: dict={},
-              aggregate: bool=False):
+    def query(self, ip: str, source: Optional[str]=None, address_family: Optional[str]=None,
+              date: Optional[str]=None, first: Optional[str]=None, last: Optional[str]=None,
+              precision_delta: Optional[Dict]=None, aggregate: bool=False):
         '''Launch a query.
 
         :param ip: IP to lookup
-        :param source: Source to query (currently, only caida is supported)
+        :param source: Source to query (caida or ripe_rrc00)
         :param address_family: v4 or v6. If None: use ipaddress to figure it out.
         :param date: Exact date to lookup. Fallback to most recent available.
         :param first: First date in the interval
@@ -108,7 +111,7 @@ class IPASNHistory():
             if '/' in ip:
                 # The user passed a prefix... getting the 1st IP in it.
                 network = ipaddress.ip_network(ip)
-                first_ip = network[0]
+                first_ip = network.hosts()[0]
                 address_family = f'v{first_ip.version}'
                 ip = str(first_ip)
 
@@ -120,7 +123,9 @@ class IPASNHistory():
                     'error': f'The IP address is invalid: "{ip}"',
                     'reponse': {}}
 
-        to_query = {'ip': ip, 'source': source, 'address_family': address_family}
+        to_query = {'ip': ip, 'address_family': address_family}
+        if source:
+            to_query['source'] = source
         if date:
             to_query['date'] = date
         elif first:

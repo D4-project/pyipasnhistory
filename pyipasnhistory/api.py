@@ -111,7 +111,7 @@ class IPASNHistory():
             if '/' in ip:
                 # The user passed a prefix... getting the 1st IP in it.
                 network = ipaddress.ip_network(ip)
-                first_ip = network.hosts()[0]
+                first_ip = network[0]
                 address_family = f'v{first_ip.version}'
                 ip = str(first_ip)
 

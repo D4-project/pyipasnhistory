@@ -31,12 +31,12 @@ ipasnhistory = "pyipasnhistory:main"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-requests = "^2.27.0"
-Sphinx = { version = "^4.2.0", optional = true }
+requests = "^2.28.1"
+Sphinx = { version = "^5.0.2", optional = true }
 
 [tool.poetry.dev-dependencies]
-mypy = "^0.930"
-types-requests = "^2.26.3"
+mypy = "^0.971"
+types-requests = "^2.28.3"
 
 [tool.poetry.extras]
 docs = ["Sphinx"]

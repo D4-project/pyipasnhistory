@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyipasnhistory"
-version = "2.1.1"
+version = "2.1.2"
 description = "Python client for IP ASN History"
 authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
 license = "AGPL"

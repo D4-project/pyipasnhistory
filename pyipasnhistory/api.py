@@ -1,28 +1,40 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
+from __future__ import annotations
 
 import json
 import requests
 
-from typing import Dict, Any, Optional
+from importlib.metadata import version
+from typing import Dict, Any, Optional, List
 from urllib.parse import urljoin, urlparse
 
 import ipaddress
 
+from urllib3.util import Retry
+from requests.adapters import HTTPAdapter
+
 
 class IPASNHistory():
 
-    def __init__(self, root_url: str='https://ipasnhistory.circl.lu/'):
+    def __init__(self, root_url: str='https://ipasnhistory.circl.lu/', useragent: str | None=None) -> None:
         self.root_url = root_url
         if not urlparse(self.root_url).scheme:
             self.root_url = 'http://' + self.root_url
         if not self.root_url.endswith('/'):
             self.root_url += '/'
         self.session = requests.session()
+        self.session.headers['user-agent'] = useragent if useragent else f'PyIPASNHIstory / {version("pyipasnhistory")}'
+        retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+        self.session.mount('http://', HTTPAdapter(max_retries=retries))
 
     @property
-    def is_up(self):
-        r = self.session.head(self.root_url)
+    def is_up(self) -> bool:
+        '''Test if the given instance is accessible'''
+        try:
+            r = self.session.head(self.root_url)
+        except requests.exceptions.ConnectionError:
+            return False
         return r.status_code == 200
 
     def meta(self):
@@ -30,7 +42,7 @@ class IPASNHistory():
         r = requests.get(urljoin(self.root_url, 'meta'))
         return r.json()
 
-    def mass_cache(self, list_to_cache: list):
+    def mass_cache(self, list_to_cache: list[dict[str, Any]]):
         '''Cache a list of IP queries. The next call on the same IPs will be very quick.'''
         to_query = []
         for entry in list_to_cache:
@@ -38,24 +50,24 @@ class IPASNHistory():
                 entry['precision_delta'] = json.dumps(entry.pop('precision_delta'))
             to_query.append(entry)
 
-        r = self.session.post(urljoin(self.root_url, 'mass_cache'), data=json.dumps(to_query))
+        r = self.session.post(urljoin(self.root_url, 'mass_cache'), json=to_query)
         return r.json()
 
-    def mass_query(self, list_to_query: list):
+    def mass_query(self, list_to_query: list[dict[str, Any]]) -> dict[str, Any]:
         '''Query a list of IPs.'''
         to_query = []
         for entry in list_to_query:
             if 'precision_delta' in entry:
                 entry['precision_delta'] = json.dumps(entry.pop('precision_delta'))
             to_query.append(entry)
-        r = self.session.post(urljoin(self.root_url, 'mass_query'), data=json.dumps(to_query))
+        r = self.session.post(urljoin(self.root_url, 'mass_query'), json=to_query)
         return r.json()
 
-    def asn_meta(self, asn: Optional[int]=None, source: Optional[str]=None, address_family: str='v4',
-                 date: Optional[str]=None, first: Optional[str]=None, last: Optional[str]=None,
-                 precision_delta: Optional[Dict]=None):
+    def asn_meta(self, asn: int | None=None, source: str | None=None, address_family: str='v4',
+                 date: str | None=None, first: str | None=None, last: str | None=None,
+                 precision_delta: dict | None=None):
         '''Get all the prefixes annonced by an AS'''
-        to_query: Dict[str, Any] = {'address_family': address_family}
+        to_query: dict[str, Any] = {'address_family': address_family}
         if source:
             to_query['source'] = source
         if asn:
@@ -69,10 +81,10 @@ class IPASNHistory():
         if precision_delta:
             to_query['precision_delta'] = json.dumps(precision_delta)
 
-        r = self.session.post(urljoin(self.root_url, 'asn_meta'), data=json.dumps(to_query))
+        r = self.session.post(urljoin(self.root_url, 'asn_meta'), json=to_query)
         return r.json()
 
-    def _aggregate_details(self, details: dict):
+    def _aggregate_details(self, details: dict) -> list:
         '''Aggregare the response when the asn/prefix tuple is the same over a period of time.'''
         to_return = []
         current = None
@@ -91,9 +103,9 @@ class IPASNHistory():
         to_return.append(current)
         return to_return
 
-    def query(self, ip: str, source: Optional[str]=None, address_family: Optional[str]=None,
-              date: Optional[str]=None, first: Optional[str]=None, last: Optional[str]=None,
-              precision_delta: Optional[Dict]=None, aggregate: bool=False):
+    def query(self, ip: str, source: str | None=None, address_family: str | None=None,
+              date: str | None=None, first: str | None=None, last: str | None=None,
+              precision_delta: dict | None=None, aggregate: bool=False):
         '''Launch a query.
 
         :param ip: IP to lookup

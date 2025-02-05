@@ -6,7 +6,7 @@ import json
 import requests
 
 from importlib.metadata import version
-from typing import Dict, Any, Optional, List
+from typing import Any
 from urllib.parse import urljoin, urlparse
 
 import ipaddress
@@ -87,7 +87,7 @@ class IPASNHistory():
     def _aggregate_details(self, details: dict) -> list:
         '''Aggregare the response when the asn/prefix tuple is the same over a period of time.'''
         to_return = []
-        current = None
+        current: dict[str, Any] = {}
         for timestamp, asn_prefix in details.items():
             if not current:
                 # First loop

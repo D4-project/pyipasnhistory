@@ -1,43 +1,44 @@
-[tool.poetry]
+[project]
 name = "pyipasnhistory"
-version = "2.1.3"
+version = "2.1.4"
 description = "Python client for IP ASN History"
-authors = ["Raphaël Vinot <raphael.vinot@circl.lu>"]
+authors = [{name="Raphaël Vinot", email="raphael.vinot@circl.lu"}]
 license = "AGPL"
-
-repository = "https://github.com/lookyloo/PyLookyloo"
-documentation = "https://pylookyloo.readthedocs.io/en/latest/"
-
 readme = "README.md"
+requires-python = ">=3.9"
 
+dynamic = [ "classifiers" ]
+
+dependencies = [
+    "requests (>=2.32.3)"
+]
+
+[project.urls]
+repository = "https://github.com/D4-project/pyipasnhistory"
+documentation = "https://pyipasnhistory.readthedocs.io/en/latest/"
+
+[tool.poetry]
 classifiers = [
-    'License :: OSI Approved :: BSD License',
     'Development Status :: 5 - Production/Stable',
     'Environment :: Console',
     'Operating System :: POSIX :: Linux',
     'Intended Audience :: Science/Research',
     'Intended Audience :: Telecommunications Industry',
     'Intended Audience :: Information Technology',
-    'Programming Language :: Python :: 3',
     'Topic :: Security',
     'Topic :: Internet',
 ]
 
-[tool.poetry.scripts]
+[project.scripts]
 ipasnhistory = "pyipasnhistory:main"
 
-[tool.poetry.dependencies]
-python = "^3.9"
-requests = "^2.32.3"
-Sphinx = { version = "^8.1.3", python = ">=3.10", optional = true }
+[project.optional-dependencies]
+docs = ["Sphinx (>=8.1.3) ; python_version >= \"3.10\""]
 
-[tool.poetry.dev-dependencies]
-mypy = "^1.14.1"
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.15.0"
 types-requests = "^2.32.0.20241016"
 
-[tool.poetry.extras]
-docs = ["Sphinx"]
-
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"

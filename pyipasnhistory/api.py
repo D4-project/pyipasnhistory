@@ -17,16 +17,25 @@ from requests.adapters import HTTPAdapter
 
 class IPASNHistory():
 
-    def __init__(self, root_url: str='https://ipasnhistory.circl.lu/', useragent: str | None=None) -> None:
-        self.root_url = root_url
+    def __init__(self, root_url: str | None=None, useragent: str | None=None,
+                 *, proxies: dict[str, str] | None=None) -> None:
+        '''Initialize the IPASNHistory client.
+
+        :param root_url: URL of the IPASNHistory instance to query. Defaults to 'https://ipasnhistory.circl.lu/'.
+        :param useragent: User-Agent to use for the requests.
+        :param proxies: Proxies to use for the requests.
+        '''
+        self.root_url = root_url if root_url else 'https://ipasnhistory.circl.lu/'
         if not urlparse(self.root_url).scheme:
             self.root_url = 'http://' + self.root_url
         if not self.root_url.endswith('/'):
             self.root_url += '/'
         self.session = requests.session()
-        self.session.headers['user-agent'] = useragent if useragent else f'PyIPASNHIstory / {version("pyipasnhistory")}'
         retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
         self.session.mount('http://', HTTPAdapter(max_retries=retries))
+        self.session.headers['user-agent'] = useragent if useragent else f'PyIPASNHIstory / {version("pyipasnhistory")}'
+        if proxies:
+            self.session.proxies.update(proxies)
 
     @property
     def is_up(self) -> bool:
